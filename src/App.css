@@ -1,0 +1,44 @@
+a {
+  text-decoration: none;
+  color: #4B9CE2;
+}
+
+p,
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+}
+
+body {
+  background-color: #F2F2F2;
+}
+
+.btn {
+  padding: .9em .5em;
+  background-color: transparent;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-blue {
+  background-color: #4B9CE2;
+  color: #fff;
+}
+
+.btn-babyBlue {
+  background-color: #F0F8FF;
+  color: #4b9ce2;
+}
+
+.tac {
+  text-align: center;
+}
+
+.spaceX {
+  margin: 0 200px;
+}
