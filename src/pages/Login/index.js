@@ -98,6 +98,7 @@ const Login = () => {
                     <label>E-mail</label>
                     <TextField
                         error={errors.email && touched.email}
+                        placeholder="Email@example.com"
                         variant="standard"
                         helperText={errors.email}
                         name="email"
