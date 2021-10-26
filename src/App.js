@@ -52,7 +52,7 @@ const App = () => {
                   path={path}
                   exact
                   component={() =>
-                    !token ? <Redirect to="/login" /> : <Component />
+                    !token ? <Redirect to="/" /> : <Component />
                   }
                 />
               )
