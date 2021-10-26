@@ -1,41 +1,60 @@
 import { signIn } from "../../services/authService";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { signInSuccess } from "../../store/actions/auth";
 import { useHistory } from "react-router";
-import { Wrapper } from "./scLogin";
-import { useDispatch, useSelector } from "react-redux";
+import { Wrapper } from "../../components/login/scLogin";
+import { useDispatch } from "react-redux";
+import * as localStorageService from "../../services/localStorageService";
+import CustomFormInput from "../../lib/utilities/CustomFormInput";
+import * as Yup from "yup";
+import { Form, Formik } from "formik";
+import ErrorIcon from "@material-ui/icons/Error";
 
 const Login = () => {
+  const validationSchema = Yup.object({
+    email: Yup.string().required("Email zorunludur").email("Hatalı email Tipi"),
+    password: Yup.string()
+      .required("Parola zorunludur")
+      .max(20, "Maximum 20 karakter olmalı.")
+      .min(8, "Minimum 8 karakter olmalı."),
+  });
+  const initialValues = { email: "", password: "" };
   const dispatch = useDispatch();
   const history = useHistory();
-  const [formData, setformData] = useState({
-    email: "",
-    password: "",
-  });
-  const onChangeInput = (e) => {
-    setformData({ ...formData, [e.target.name]: e.target.value });
-  };
-  const formSubmit = (e) => {
-    console.log("ne geldi e", e, formData);
-    e.preventDefault();
-    console.log("formmmmdatas", formData);
-    //dispatch(signInAction(formData));
-    signIn(formData)
+  const [errorMessage, setErrorMessage] = useState(false);
+  const formSubmit = (values) => {
+    signIn(values)
       .then((res) => {
-        console.log("başardım", res);
-        history.push("/home");
+        dispatch(signInSuccess(res.data));
+        localStorageService.setToken(res.data.access_token);
+        localStorageService.setUser(values.email);
+        history.push("/");
       })
       .catch((e) => {
-        console.log("başaramadık", e);
+        setErrorMessage(true);
+        const timer = setTimeout(() => {
+          setErrorMessage(false);
+        }, 3000);
+        return () => clearTimeout(timer);
       });
   };
   return (
     <Wrapper>
-      <div className="loginContainer">
-        <div className="coverImg">
+      {errorMessage && (
+        <div className="errorMessage">
+          <div className="errorIcon">
+            <ErrorIcon style={{ color: "#F77474" }} />
+          </div>
+          <div className="errorDescription">Email veya şifreniz hatalı.</div>
+        </div>
+      )}
+
+      <div className="loginContainer d-block-mb">
+        <div className="coverImg d-none-mb">
           <img
             src={require("../../assets/img/coverImg.png").default}
-            alt="deneme"
+            alt="CoverImage"
           />
         </div>
         <div>
@@ -43,42 +62,54 @@ const Login = () => {
             <div className="loginLogo">
               <img
                 src={require("../../assets/img/logo.svg").default}
-                alt="deneme"
+                alt="Logo"
               />
             </div>
             <div className="loginBox">
-            <div className="boxHeader tac">
+              <div className="boxHeader tac">
                 <h3>Giriş Yap</h3>
-                <p style={{fontSize: 13}}>Fırsatlardan yararlanmak için giriş yap!</p>
-            </div>
-              <form className="form" onSubmit={formSubmit}>
-                <div className="inputWrapper">
-                  <label for="email">E-posta</label>
-                  <input
-                    name="email"
-                    type="email"
-                    id="email"
-                    required
-                    onChange={onChangeInput}
-                    placeholder="email@example.com"
-                  />
-                </div>
-                <div className="inputWrapper">
-                  <label for="password">Parola</label>
-                  <input
-                    type="password"
-                    id="password"
-                    required
-                    onChange={onChangeInput}
-                    placeholder="********"
-                  />
-                </div>
-                <div className="forgetPassword">
-                    <Link to={'/aboutAuthor'}>Şifremi unuttum</Link>
-                </div>
-                <button className="btn btn-blue">Giriş</button>
-              </form>
-              <p className="tac signUp">Hesabın yok mu? <Link to={'/register'}> Üye Ol</Link></p>
+                <p style={{ fontSize: 13 }}>
+                  Fırsatlardan yararlanmak için giriş yap!
+                </p>
+              </div>
+              <Formik
+                onSubmit={(values, formikHelpers) => formSubmit(values)}
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+              >
+                {/* yanlışsa email ve şifre veya doğruysa inputlarda işlem yapsın diye preventdefaul ,form submit olduğunda sayfayı refreshlemesin diye*/}
+
+                <Form className="form">
+                  <div className="inputWrapper">
+                    <label>E-mail</label>
+                    <CustomFormInput
+                      className="customFormInput"
+                      type="email"
+                      placeholder="Email@example.com"
+                      name="email"
+                    />
+                  </div>
+                  <div className="inputWrapper">
+                    <label>Şifre</label>
+                    <CustomFormInput
+                      className="customFormInput"
+                      type="password"
+                      placeholder="********"
+                      name="password"
+                    />
+                  </div>
+
+                  <div className="forgetPassword">
+                    <Link to={"/aboutAuthor"}>Şifremi unuttum</Link>
+                  </div>
+                  <button className="btn btn-blue" type="submit">
+                    Giriş
+                  </button>
+                  <p className="tac signUp">
+                    Hesabın yok mu? <Link to={"/register"}> Üye Ol</Link>
+                  </p>
+                </Form>
+              </Formik>
             </div>
           </div>
         </div>

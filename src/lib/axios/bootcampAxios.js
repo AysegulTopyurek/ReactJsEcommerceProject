@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const bootcampAxios = axios.create({
-  baseURL: "http://bootcampapi.techcs.io/api/fe/v1/",
+  baseURL: "https://bootcampapi.techcs.io/api/fe/v1/",
   headers: {
     'Content-Type': 'application/json'
   } 
@@ -15,7 +15,11 @@ bootcampAxios.interceptors.request.use((req) => {
   }
   return req;
 });
+//axiosta attığğım isteklerde loading catche düşmesin diye bunu kullanıyoruz
 
-
-
+//  bootcampAxios.interceptors.response.use((response) => response, (error) => {
+//    const dispatch=getDispatch();
+//  dispatch(setIsLoading(false))
+//    return Promise.reject(error);
+//  });
 export default bootcampAxios;

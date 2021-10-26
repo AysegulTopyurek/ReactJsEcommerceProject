@@ -1,91 +1,96 @@
-import signUpAction from '../../actions/signUp';
-import { signUpService } from '../../services';
 import { Link } from "react-router-dom";
-import React,{useState}  from 'react';
-import { useHistory } from 'react-router';
-import {Wrapper} from './scRegister';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from "react";
+import { useHistory } from "react-router";
+import { useDispatch } from "react-redux";
+import { Wrapper } from "../../components/register/scRegister";
+import { signUpService } from "../../services/authService";
+import CustomFormInput from "../../lib/utilities/CustomFormInput";
+import * as localStorageService from "../../services/localStorageService";
+import { signInSuccess } from "../../store/actions/auth";
+import * as Yup from "yup";
+import { Form, Formik } from "formik";
 const Register = () => {
-    const signUp = useSelector((state) => state.signUp);
-    console.log("signUp",signUp)
-    const dispatch = useDispatch();
+  const validationSchema = Yup.object({
+    email: Yup.string().required("Email zorunludur").email("Hatalı email Tipi"),
+    password: Yup.string()
+      .required("Parola zorunludur")
+      .max(20, "Maximum 20 karakter olmalı.")
+      .min(8, "Minimum 8 karakter olmalı."),
+  });
+  const initialValues = { email: "", password: "" };
+  const history = useHistory();
+  const dispatch = useDispatch();
 
-    const[formData,setformData]=useState({
-        email:"",
-        password:"",   
-    })
-    const history=useHistory();
-
-   const onChangeInput=(e)=>{
-       setformData({...formData,[e.target.name]:e.target.value})
-
-    }
-    const formSubmit = (e) => {
-        console.log("ne geldi e",e,formData)
-        e.preventDefault();
-        console.log("formmmmdatas",formData);
-        //dispatch(signUpAction(formData));
-
-        signUpService(formData).then((res)=>{
-            console.log("başardım",res)
-            history.push("/register")
-        }).catch(e=>{
-            console.log("başaramadık",e)
-        });
-
-      };
-return(
+  const formSubmit = (values) => {
+    signUpService(values)
+      .then((res) => {
+        dispatch(signInSuccess(res.data));
+        localStorageService.setToken(res.data.access_token);
+        localStorageService.setUser(values.email);
+        history.push("/");
+      })
+      .catch((e) => {});
+  };
+  return (
     <Wrapper>
-    <div className="registerContainer">
-      <div className="coverImg">
-        <img
-          src={require("../../assets/img/coverImg.png").default}
-          alt="deneme"
-        />
-      </div>
-      <div>
-        <div className="formWrapper">
-          <div className="registerLogo">
-            <img
-              src={require("../../assets/img/logo.svg").default}
-              alt="deneme"
-            />
-          </div>
-          <div className="registerBox">
-          <div className="boxHeader tac">
-              <h3>Üye Ol</h3>
-              <p style={{fontSize: 13}}>Fırsatlardan yararlanmak için üye ol!</p>
-          </div>
-            <form className="form" onSubmit={formSubmit}>
-              <div className="inputWrapper">
-                <label for="email">E-posta</label>
-                <input
-                  name="email"
-                  type="email"
-                  id="email"
-                  required
-                  onChange={onChangeInput}
-                  placeholder="email@example.com"
-                />
+      <div className="registerContainer d-block-mb">
+        <div className="coverImg d-none-mb">
+          <img
+            src={require("../../assets/img/coverImg.png").default}
+            alt="CoverImage"
+          />
+        </div>
+        <div>
+          <div className="formWrapper">
+            <div className="registerLogo">
+              <img
+                src={require("../../assets/img/logo.svg").default}
+                alt="Logo"
+              />
+            </div>
+            <div className="registerBox">
+              <div className="boxHeader tac">
+                <h3>Üye Ol</h3>
+                <p style={{ fontSize: 13 }}>
+                  Fırsatlardan yararlanmak için üye ol!
+                </p>
               </div>
-              <div className="inputWrapper">
-                <label for="password">Parola</label>
-                <input
-                  type="password"
-                  id="password"
-                  required
-                  onChange={onChangeInput}
-                  placeholder="********"
-                />
-              </div>
-              <button className="btn btn-blue">Üye Ol</button>
-            </form>
-            <p className="tac signIn">Hesabın var mı? <Link to={'/login'}> Giriş Yap</Link></p>
+
+              <Formik
+                onSubmit={(values, formikHelpers) => formSubmit(values)}
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+              >
+                <Form className="form">
+                  <div className="inputWrapper">
+                    <label>E-mail</label>
+                    <CustomFormInput
+                      className="customFormInput"
+                      type="email"
+                      placeholder="Email@example.com"
+                      name="email"
+                    />
+                  </div>
+                  <div className="inputWrapper">
+                    <label>Şifre</label>
+                    <CustomFormInput
+                      className="customFormInput"
+                      type="password"
+                      placeholder="********"
+                      name="password"
+                    />
+                  </div>
+                  <button className="btn btn-blue">Üye Ol</button>
+                  <p className="tac signIn">
+                    Hesabın var mı? <Link to={"/login"}> Giriş Yap</Link>
+                  </p>
+                </Form>
+              </Formik>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </Wrapper>
-)
-}
+    </Wrapper>
+  );
+};
 export default Register;

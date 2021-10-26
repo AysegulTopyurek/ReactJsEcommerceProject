@@ -1,0 +1,12 @@
+
+input {
+    outline: 0;
+    border: 0;
+    background: #F4F4F4 0% 0% no-repeat padding-box;
+    padding: 12px 6px;
+    color: gray;
+}
+
+input:focus {
+    border: 1px solid var(--unnamed-color-f77474);
+}

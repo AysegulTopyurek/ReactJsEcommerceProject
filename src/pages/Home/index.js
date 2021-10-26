@@ -1,102 +1,116 @@
-import { Wrapper } from "./scHome";
+import { Wrapper } from "../../components/home/scHome";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getAllCategories } from "../../services/categoryService";
 import { getAllProducts } from "../../services/productService";
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useDispatch, useSelector } from "react-redux";
+import Header from "../../components/Header/Header";
+import { setIsLoading } from "../../store/actions/shopAction";
+import { getCategories } from "../../store/actions/categoriesAction";
+import { getProducts } from "../../store/actions/productsAction";
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation()?.search);
+};
 const Home = () => {
-  const [categoriesList, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const token = useSelector((state) => state.auth.token);
+
   const query = useQuery();
   const categoryId = query.get("categoryId");
+  let products = useSelector((state) => state.product.products) || [];
+  let isLoading = useSelector((state) => state.shop.isLoading) || false;
+  let categories = useSelector((state) => state.category.categories) || [];
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setIsLoading(true));
 
-  useEffect(() => {
     getAllCategories().then((res) => {
-      setCategories(res.data);
-      console.log("kategoriler", res.data);
+      dispatch(setIsLoading(false));
+      dispatch(getCategories(res.data));
     });
-  }, []);
-  useEffect(() => {
     getAllProducts().then((res) => {
-      console.log("productlar", res.data);
-      setProducts(res.data);
-      if (categoryId) {
-        console.log("111");
-        let degisen = products.filter((p) => p.category.id == categoryId);
-        setProducts([...degisen]);
-      }
-      console.log("product after if", products);
+      dispatch(setIsLoading(false));
+      dispatch(getProducts(res.data));
     });
-  }, [categoryId]);
+  }, [dispatch]);
+  if (categoryId) {
+    products = products.filter((p) => p.category.id == categoryId);
+  }
+  const setColor = (item) => {
+    return categoryId === item.id ? "#4B9CE2" : "#525252";
+  };
 
   return (
     <Wrapper>
-      <div className="navWrapper">
-        <nav>
-          <ul className="menu">
-            <li>
-              <img
-                className="logo"
-                src={require("../../assets/img/logo.svg").default}
-                alt="deneme"
-              />
-            </li>
-            <li>
-              <Link className="btn btn-babyBlue" to="/addProduct">
-                Ürün ekle
-              </Link>
-            </li>
-            <li>
-              <Link className="btn btn-babyBlue" to="/login">
-                Giriş yap
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      <Header token={token}></Header>
       <div className="spaceX">
         <div>
-          <div className="banner">
+          <div style={{display:"flex"}}>
+          <div style={{margin:"auto"}}>
             <img
               src={require("../../assets/img/banner.png").default}
               alt="banner"
             />
           </div>
+          </div>
+
+  
           <div>
             <ul className="catNav">
               <li>
-                <Link to={`/all`}>Hepsi</Link>
+                <Link
+                  style={{
+                    color: !categoryId ? "#4B9CE2" : "#525252",
+                    fontSize: 18,
+                  }}
+                  to="/"
+                >
+                  Hepsi
+                </Link>
               </li>
 
-              {categoriesList.map((item) => (
+              {categories.map((item) => (
                 <li key={item.id}>
-                  <Link to={`/?categoryId=${item.id}`}>{item.title}</Link>
+                  <Link
+                    style={{ color: setColor(item), fontSize: 18 }}
+                    to={`/?categoryId=${item.id}`}
+                  >
+                    {item.title}
+                  </Link>
                 </li>
               ))}
-
-              <li>
-                <Link to="/register">Diğer</Link>
-              </li>
             </ul>
           </div>
+          {isLoading && (
+        <div className="loading">
+          <div className="spinner">
+            <img  src={require("../../assets/img/spinner.svg").default} alt="loading"/>
+          </div>
+          <div>Ürünler yükleniyor</div>
+        </div>
+      )}
 
           <div className="productWrapper">
             {products.map((item) => (
-              <div className="product" key={item.id}>
+              <Link
+                to={`/productDetail?productId=${item.id}`}
+                className="product"
+                item={item}
+                key={item.id}
+              >
                 <div>
                   <img
-                    src={require("../../assets/img/pantolon.png").default}
-                    alt="deneme"
+                    className="productImage"
+                    src={item.imageUrl}
+                    alt="ProductImage"
                   />
                 </div>
                 <div className="productDescription">
-                  <div className="brand">Levi's</div>
-                  <div className="variant">Renk: Pink</div>
+                  <div className="brand">{item.brand.title}</div>
+                  <div className="variant">Renk: {item.color.title}</div>
                 </div>
-                <div className="price">1.900 TL</div>
-              </div>
+                <div className="price">{item.price} TL</div>
+              </Link>
             ))}
           </div>
         </div>

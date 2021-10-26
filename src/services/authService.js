@@ -1,8 +1,9 @@
-import bootcampAxios from '../lib/axios/bootcampAxios';
+import bootcampAxios from "../lib/axios/bootcampAxios";
 
-// eslint-disable-next-line import/prefer-default-export
 export const signIn = async (formData) => {
-  return bootcampAxios.post( 'authorization/signin',formData
-)
-  
+  return bootcampAxios.post("authorization/signin", formData);
+};
+
+export const signUpService = async (formData) => {
+  return bootcampAxios.post("authorization/signup", formData);
 };
