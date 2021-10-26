@@ -15,7 +15,7 @@ const GivenOffersRow = ({ item, buyProduct }) => {
     </div>
 
     <div className="right">
-      {item.status === "accepted" &&  item.isSold !=="sold" &&(
+      {item.status === "accepted" &&  !item.product.isSold &&(
         <div style={{display:"flex",gap:"1em",alignItems:"center"}}>
           <button
             className="btn btn-blue"
@@ -27,8 +27,8 @@ const GivenOffersRow = ({ item, buyProduct }) => {
         </div>
       )}
 
-      {item.status === "rejected" &&  item.isSold !=="sold" &&<span>Reddedildi</span>}
-      { item.isSold ==="sold" &&<span>Satıldı</span>}
+      {item.status === "rejected" && !item.product.isSold &&<span>Reddedildi</span>}
+      {item.product.isSold &&<span>Satıldı</span>}
     </div>
   </div>
   );

@@ -75,7 +75,7 @@ form {
     text-align: right;
     padding: 15px;
     padding-top: 0;
-    transform: translateY(-15px);
+    transform: translateY(5px);
 }
 
 .forgetPassword a {

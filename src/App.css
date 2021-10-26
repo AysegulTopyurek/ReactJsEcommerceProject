@@ -78,6 +78,37 @@ label {
   border: 1px solid #4b9ce2;
 }
 
+.inputWrapper input,
+.MuiInput-root {
+    border-radius: 10px;
+    background-color: #F4F4F4;
+    width: 100%;
+    border: 2px solid transparent;
+}
+
+.MuiInput-underline::after {
+  display: none !important;
+}
+
+.MuiInput-root {
+  margin-bottom: 1em;
+}
+
+.MuiInput-root input {
+  padding: 10px;
+}
+
+.MuiInput-underline:before,
+.MuiInput-underline.Mui-error:after {
+    display: none;
+}
+
+.inputWrapper input:focus,
+.MuiInput-root:focus {
+    background-color: #F0F8FF;
+    border: 2px solid #4B9CE2;
+}
+
 /* Responsivity */
 
 @media (max-width: 1000px) {

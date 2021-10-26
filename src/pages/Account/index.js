@@ -5,7 +5,10 @@ import { Wrapper } from "../../components/account/scAccount";
 import * as localStorageService from "../../services/localStorageService";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { acceptOffer, rejectOffer } from "../../services/accountService";
-import { setReceivedOffers } from "../../store/actions/accountAction";
+import {
+  setGivenOffers,
+  setReceivedOffers,
+} from "../../store/actions/accountAction";
 import GivenOffersRow from "../../components/account/givenOffersRow";
 import ReceivedOffersRow from "../../components/account/receivedOffersRow";
 import { purchaseProduct } from "../../services/productService";
@@ -17,10 +20,15 @@ const Account = () => {
   const [isGive, setGive] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [isReceive, setReceive] = useState(true);
-  const givenOffers = useSelector((state) => state.account.givenOffers);
-  const receivedOffers =
+  const [received, setReceived] = useState([]);
+  const [givens, setGivens] = useState([]);
+  let givenOffers = useSelector((state) => state.account.givenOffers);
+  let receivedOffers =
     useSelector((state) => state.account.receivedOffers) || [];
-  useEffect(() => {}, [givenOffers, receivedOffers]);
+  useEffect(() => {
+    setReceived(receivedOffers);
+    setGivens(givenOffers);
+  }, [givenOffers, receivedOffers]);
   const handleChange = (value) => {
     if (value === "given") {
       setGive(true);
@@ -32,22 +40,27 @@ const Account = () => {
   };
   const acceptGivenOffers = (item) => {
     acceptOffer(item.id).then((res) => {
-      dispatch(
-        setReceivedOffers([...receivedOffers, { ...item, status: "accepted" }])
-      );
-      item.status = "accepted";
+      setReceived([
+        ...received.filter((i) => i.id !== item.id),
+        { ...item, status: "accepted" },
+      ]);
+      dispatch(setReceivedOffers(received));
     });
   };
   const rejectGivenOffers = (item) => {
     rejectOffer(item.id).then((res) => {
-      dispatch(
-        setReceivedOffers([...receivedOffers, { ...item, status: "rejected" }])
-      );
-      item.status = "rejected";
+      setReceived([
+        ...received.filter((i) => i.id !== item.id),
+        { ...item, status: "rejected" },
+      ]);
+      dispatch(setReceivedOffers(received));
     });
   };
   const buyProduct = (item) => {
     purchaseProduct(item.product.id).then((res) => {
+      item.product.isSold = true;
+      setGivens([...givens.filter((i) => i.id !== item.id), { ...item }]); //üzerine yazmasın diye filtreliyoruz
+      dispatch(setGivenOffers(givens));
       setSuccessMessage(true);
       const timer = setTimeout(() => {
         setSuccessMessage(false);
@@ -55,6 +68,11 @@ const Account = () => {
       return () => clearTimeout(timer);
     });
   };
+  const exitApp =()=>{
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+     window.location.href='/';
+  }
 
   return (
     <Wrapper>
@@ -70,6 +88,7 @@ const Account = () => {
       <div className="userInfo spaceX">
         <AccountCircle style={{ fill: "#ddd", fontSize: "38px" }} />{" "}
         {localStorageUser}
+        <button onClick={()=>exitApp()} className="btn btn-babyBlue">Çıkış yap</button>
       </div>
       <div className="spaceX bg-white">
         <button
@@ -97,7 +116,7 @@ const Account = () => {
           Teklif Verdiklerim
         </button>
         {isReceive &&
-          receivedOffers.map((item) => (
+          received.map((item) => (
             <ReceivedOffersRow
               key={item.id}
               item={item}
@@ -107,7 +126,7 @@ const Account = () => {
           ))}
 
         {isGive &&
-          givenOffers.map((item) => (
+          givens.map((item) => (
             <GivenOffersRow key={item.id} item={item} buyProduct={buyProduct} />
           ))}
       </div>

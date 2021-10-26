@@ -63,7 +63,6 @@ input {
     background: #F4F4F4 0% 0% no-repeat padding-box;
     padding: 12px 6px;
     color: gray;
-    margin-bottom: 20px;
 }
 
 input:focus {

@@ -6,9 +6,15 @@ import { useHistory } from "react-router";
 import { Wrapper } from "../../components/login/scLogin";
 import { useDispatch } from "react-redux";
 import * as localStorageService from "../../services/localStorageService";
-import CustomFormInput from "../../lib/utilities/CustomFormInput";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
+import {
+  FormControlLabel,
+  FormHelperText,
+  MenuItem,
+  Select,
+  TextField,
+} from "@material-ui/core";
 import ErrorIcon from "@material-ui/icons/Error";
 
 const Login = () => {
@@ -73,30 +79,48 @@ const Login = () => {
                 </p>
               </div>
               <Formik
-                onSubmit={(values, formikHelpers) => formSubmit(values)}
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-              >
-                {/* yanlışsa email ve şifre veya doğruysa inputlarda işlem yapsın diye preventdefaul ,form submit olduğunda sayfayı refreshlemesin diye*/}
-
-                <Form className="form">
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={formSubmit}
+          >
+            {(formik) => {
+              const {
+                values,
+                handleChange,
+                handleSubmit,
+                errors,
+                touched,
+                handleBlur,
+              } = formik;
+              return (
+                <form className="form" onSubmit={handleSubmit}>
                   <div className="inputWrapper">
                     <label>E-mail</label>
-                    <CustomFormInput
-                      className="customFormInput"
-                      type="email"
-                      placeholder="Email@example.com"
-                      name="email"
-                    />
+                    <TextField
+                        error={errors.email && touched.email}
+                        variant="standard"
+                        helperText={errors.email}
+                        name="email"
+                        type="text"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.email}
+                      />
                   </div>
                   <div className="inputWrapper">
                     <label>Şifre</label>
-                    <CustomFormInput
-                      className="customFormInput"
-                      type="password"
-                      placeholder="********"
-                      name="password"
-                    />
+                    <TextField
+                        error={errors.password && touched.password}
+                        variant="standard"
+                        helperText={errors.password}
+                        name="password"
+                        type="password"
+                        placeholder="********"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.password}
+                      />
+    
                   </div>
 
                   <div className="forgetPassword">
@@ -108,8 +132,12 @@ const Login = () => {
                   <p className="tac signUp">
                     Hesabın yok mu? <Link to={"/register"}> Üye Ol</Link>
                   </p>
-                </Form>
-              </Formik>
+            
+                </form>
+              );
+            }}
+          </Formik>
+  
             </div>
           </div>
         </div>

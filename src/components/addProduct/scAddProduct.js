@@ -328,25 +328,7 @@ label {
   color: skyblue;
 }
 
-.inputWrapper input,
-.MuiInput-root {
-    background: red;
-    border-radius: 10px;
-    background-color: #F4F4F4;
-    padding: 4px;
-    width: 100%;
-}
 
-.MuiInput-underline:before,
-.MuiInput-underline.Mui-error:after {
-    display: none;
-}
-
-.inputWrapper input:focus,
-.MuiInput-root:focus {
-    background-color: #F0F8FF;
-    border: 2px solid #4B9CE2;
-}
 
 .dragDrop {
     text-align: center;

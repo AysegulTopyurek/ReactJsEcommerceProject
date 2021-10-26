@@ -14,7 +14,7 @@ const CustomFormInput = ({ ...props }) => {
     },
     input:{
       "&&":{
-        outline: 0,background: "#F4F4F4",color:"#99A0A7",padding: "10px",marginBottom:"1em",borderRadius: "8px",
+        outline: 0,background: "#F4F4F4",color:"#99A0A7",padding: "10px",borderRadius: "8px",
       },
      "&&:focus":{
        background:"#F0F8FF",
