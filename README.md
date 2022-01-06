@@ -1,6 +1,6 @@
 # Project
 An e-commerce site built with React js 
-[LIVE](https://bitirme-projesi-one.vercel.app/)
+
 # Performance
 
 ![performance](http://safagayret.com/aysegul-bitirmeProjesi.png)
