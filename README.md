@@ -1,5 +1,6 @@
 # Project
 An e-commerce site built with React js 
+https://www.linkedin.com/posts/aysegultopyurek_react-ecommerce-github-activity-6873962629333835776-N2iN?utm_source=linkedin_share&utm_medium=member_desktop_web
 
 # Performance
 
